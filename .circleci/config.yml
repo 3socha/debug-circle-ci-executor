@@ -1,0 +1,15 @@
+version: 2.1
+
+jobs:
+  build:
+    executor:
+      machine:
+        image: ubuntu-2204:2023.04.2  # https://circleci.com/docs/configuration-reference/#available-linux-machine-images-cloud
+    steps:
+      - checkout
+      - run: sleep 1800
+
+workflows:
+  debug_build:
+    jobs:
+      - build
