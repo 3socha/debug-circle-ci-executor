@@ -1,19 +1,46 @@
 version: 2.1
 
 executors:
-  builder:
+  builder_new:
+    machine:
+      image: ubuntu-2204:2023.10.1
+  builder_old:
     machine:
       image: ubuntu-2204:2023.04.2  # https://circleci.com/docs/configuration-reference/#available-linux-machine-images-cloud
 
-jobs:
-  build:
-    executor: builder
+commands:
+  build_and_test:
     steps:
       - checkout
-      - run: "false"
-      - run: sleep 1800
+      - run:
+          name: Install test tools
+          command: |
+            sudo apt update -qq
+            sudo apt install -y -qq moreutils
+            mkdir ~/opt
+            tar xf prefetched/*/nodejs.tar.gz -C ~/opt --strip-components 1
+            PATH=${PATH}:~/opt/bin npm install --global --silent --no-progress tap-xunit bats
+            echo "export PATH=${PATH}:~/opt/bin" >> ${BASH_ENV}
+      - run:
+          name: Test
+          command: |
+            mkdir ~/reports
+            bats --print-output-on-failure test.bats | pee cat "tap-xunit > ~/reports/result.xml"
+      - store_test_results:
+          path: ~/reports
+
+jobs:
+  build_new:
+    executor: builder_new
+    steps:
+      - build_and_test
+  build_old:
+    executor: builder_old
+    steps:
+      - build_and_test
 
 workflows:
   debug_build:
     jobs:
-      - build
+      - build_new
+      - build_old
