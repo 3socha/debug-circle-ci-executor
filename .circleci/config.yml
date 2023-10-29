@@ -21,8 +21,7 @@ commands:
           name: Install test tools
           command: |
             node_version="$(curl -s https://nodejs.org/dist/index.json | jq -r '[.[]|select(.lts)][0].version')"
-            if [ "$(arch)" = "amd64" ]; then curl -fSL "https://nodejs.org/dist/$node_version/node-$node_version-linux-x64.tar.gz" -o nodejs.tar.gz; fi
-            if [ "$(arch)" = "arm64" ]; then curl -fSL "https://nodejs.org/dist/$node_version/node-$node_version-linux-arm64.tar.gz" -o nodejs.tar.gz; fi
+            curl -fSL "https://nodejs.org/dist/$node_version/node-$node_version-linux-x64.tar.gz" -o nodejs.tar.gz
             mkdir ~/opt
             tar xf nodejs.tar.gz -C ~/opt --strip-components 1
             PATH=${PATH}:~/opt/bin npm install --global --silent --no-progress tap-xunit bats
