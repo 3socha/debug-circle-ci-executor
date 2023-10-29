@@ -13,19 +13,11 @@ commands:
     steps:
       - checkout
       - run:
-          name: Install packages
-          command: |
-            sudo apt update -qq
-            sudo apt install -y -qq moreutils jq
-      - run:
           name: Install test tools
           command: |
-            node_version="$(curl -s https://nodejs.org/dist/index.json | jq -r '[.[]|select(.lts)][0].version')"
-            curl -fSL "https://nodejs.org/dist/$node_version/node-$node_version-linux-x64.tar.gz" -o nodejs.tar.gz
-            mkdir ~/opt
-            tar xf nodejs.tar.gz -C ~/opt --strip-components 1
-            PATH=${PATH}:~/opt/bin npm install --global --silent --no-progress tap-xunit bats
-            echo "export PATH=${PATH}:~/opt/bin" >> ${BASH_ENV}
+            sudo apt update -qq
+            sudo apt install -y -qq moreutils
+            npm install --global --silent --no-progress tap-xunit bats
       - run:
           name: Test
           command: |
